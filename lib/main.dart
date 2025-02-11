@@ -2,49 +2,62 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:greenleaf_app/shared/providers/app_provider.dart';
+import 'package:greenleaf_app/shared/screens/splash_screen.dart';
+import 'package:greenleaf_app/shared/utils/color_schemes.g.dart';
+import 'package:greenleaf_app/shared/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   setUpWindow();
-  runApp(const MyApp());
+  runApp(const GreenLeafApp());
 }
-
-const double windowWidth = 400;
-const double windowHeight = 800;
 
 void setUpWindow() {
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     WidgetsFlutterBinding.ensureInitialized();
-    // setWindowTitle('Provider Demo');
-    // setWindowMinSize(const Size(windowWidth, windowHeight));
-    // setWindowMaxSize(const Size(windowWidth, windowHeight));
-    // getCurrentScreen().then((screen) {
-    //   setWindowFrame(Rect.fromCenter(
-    //     center: screen!.frame.center,
-    //     width: windowWidth,
-    //     height: windowHeight,
-    //   ));
-    // });
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class GreenLeafApp extends StatefulWidget {
+  const GreenLeafApp({super.key});
+
+  @override
+  State<GreenLeafApp> createState() => _GreenLeafAppState();
+}
+
+class _GreenLeafAppState extends State<GreenLeafApp> {
+  ThemeMode? _themeMode = ThemeMode.system;
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Text('Home'),
-    );
+    ThemeData themeWithFont(ThemeData theme) => theme.copyWith();
 
-    // return MultiProvider(
-    //   providers: [],
-    //   child: Text("Home"),
-    // );
+    return MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => AppProvider())],
+        child: MaterialApp(
+          navigatorKey: Constants.globalAppKey,
+          debugShowCheckedModeBanner: false,
+          home: SplashScreen(),
+          themeMode: _themeMode,
+          theme: themeWithFont(
+            ThemeData(
+                useMaterial3: true,
+                fontFamily: 'NotoSans',
+                colorScheme: lightColorScheme),
+          ),
+          darkTheme: themeWithFont(
+            ThemeData(
+                useMaterial3: true,
+                fontFamily: 'NotoSans',
+                colorScheme: darkColorScheme),
+          ),
+        ));
   }
 }
