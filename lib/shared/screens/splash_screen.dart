@@ -3,6 +3,7 @@ import 'package:greenleaf_app/modules/authentication/screens/sign_in.dart';
 import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/shared/screens/app_logo.dart';
 import 'package:greenleaf_app/shared/screens/intro_screen.dart';
+import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,19 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 3));
 
     if (user != null) {
-      Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-              settings: const RouteSettings(name: '/'),
-              builder: (context) => IntroductionScreen()));
+      navigateAndReplace(context, IntroductionScreen());
     } else {
-      Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-              settings: const RouteSettings(name: '/'),
-              builder: (context) => IntroductionScreen()));
+      navigateAndReplace(context, SignUp());
     }
 
     if (!mounted) return;
