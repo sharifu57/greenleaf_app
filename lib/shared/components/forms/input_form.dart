@@ -70,7 +70,7 @@ class _InputFormState extends State<InputForm> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.countryCode, // Country code
+                widget.countryCode,
                 style: const TextStyle(fontSize: 13),
               ),
               const SizedBox(
