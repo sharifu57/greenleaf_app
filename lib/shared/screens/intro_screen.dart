@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:greenleaf_app/shared/utils/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({super.key});
@@ -10,27 +13,45 @@ class IntroductionScreen extends StatefulWidget {
 
 class _IntroductionScreenState extends State<IntroductionScreen> {
   final PageController _pageController = PageController(initialPage: 0);
-  final int _currentPage = 0;
-  bool on_last_page = false;
+  bool onLastPage = false;
+
+  final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
+    foregroundColor: Colors.black87,
+    backgroundColor: AppColors.primaryColor,
+    minimumSize: Size(88, 36),
+    padding: EdgeInsets.symmetric(horizontal: 16),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+    ),
+  );
+
+  final ButtonStyle flatButtonStyle = TextButton.styleFrom(
+    foregroundColor: Colors.black87,
+    minimumSize: Size(88, 36),
+    padding: EdgeInsets.symmetric(horizontal: 16),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(2)),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final fullHeight = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: SizedBox(
+    return Scaffold(
+      body: SizedBox(
         height: fullHeight,
         child: Scaffold(
-          body: Stack(
+          body: Column(
             children: [
               Container(
-                height: fullHeight / 2,
-                padding: EdgeInsets.all(20),
+                height: fullHeight / 1.2,
+                padding: const EdgeInsets.all(20),
                 child: PageView(
                   controller: _pageController,
-                  onPageChanged: (index) => {
+                  onPageChanged: (index) {
                     setState(() {
-                      on_last_page = (index == 2);
-                    })
+                      onLastPage = (index == 2);
+                    });
                   },
                   children: [
                     pageOne(context),
@@ -41,14 +62,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               ),
               Container(
                 alignment: const Alignment(0, 1),
-                height: fullHeight / 1.8,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () => {_pageController.jumpTo(2)},
-                      child: Text("M"),
-                    ),
                     SmoothPageIndicator(
                       controller: _pageController,
                       count: 3,
@@ -58,26 +74,45 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                         type: WormType.thin,
                       ),
                     ),
-                    on_last_page
-                        ? GestureDetector(
-                            onTap: () {
+                    Container(
+                      padding: EdgeInsets.only(top: 5),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: raisedButtonStyle,
+                          onPressed: () {
+                            if (onLastPage) {
+                              _pageController.animateToPage(0,
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.easeInOut);
+                            } else {
                               _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 500),
-                                  curve: Curves.easeIn);
-                            },
-                            child: const Text(""),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeIn);
-                            },
-                            child: Text("G"),
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeIn,
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Next',
+                            style: TextStyle(color: Colors.white),
                           ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                        child: TextButton(
+                      style: flatButtonStyle,
+                      onPressed: () {},
+                      child: Text(
+                        'Skip',
+                        style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ))
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
@@ -86,54 +121,94 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   }
 
   Widget pageOne(context) {
-    return SizedBox(
-      child: SizedBox(
-        child: Column(
-          children: [
-            Expanded(
-              // child: Lottie.asset(
-              //   'assets/img/img2.json',
-              //   repeat: true,
-              //   fit: BoxFit.contain,
-              // ),
-              child: Text("Hello 1"),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              child: const Column(
-                children: [
-                  Text(
-                    'Find Opportunities',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                  ),
-                  Column(
-                    children: [
-                      Text('Get notified every time a new project is created'),
-                      Text('and be the first one to apply for it.'),
-                    ],
-                  )
-                ],
+    final fullHeight = MediaQuery.of(context).size.height;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: fullHeight / 11),
+          Column(
+            children: [
+              const Text(
+                'Control',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
               ),
-            )
-          ],
-        ),
+              const Text(
+                'Your Crops!',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: fullHeight / 2,
+            child: SizedBox(
+              width: 400,
+              height: 400,
+              child: SvgPicture.asset(
+                'assets/images/agr.svg',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: Text(
+                'Take control of your products and crops on each day to oversee the problem which could.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget pageTwo(context) {
-    return Container(
-      child: Center(
-        child: Text('Page Two'),
+    final fullHeight = MediaQuery.of(context).size.height;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: fullHeight / 11),
+          Column(
+            children: [
+              const Text(
+                'Sell',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              ),
+              const Text(
+                'Your Crops!',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: fullHeight / 2,
+            child: SizedBox(
+              width: 300,
+              height: 300,
+              child: SvgPicture.asset(
+                'assets/images/seed.svg',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: Text(
+                'Take control of your products and crops on each day to oversee the problem which could.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget pageThree(context) {
-    return Container(
-      child: Center(
-        child: Text('Page Three'),
-      ),
-    );
+    return const Center(child: Text('Page Three'));
   }
 }

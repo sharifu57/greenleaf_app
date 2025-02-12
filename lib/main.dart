@@ -2,14 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:greenleaf_app/shared/providers/app_provider.dart';
 import 'package:greenleaf_app/shared/screens/splash_screen.dart';
 import 'package:greenleaf_app/shared/utils/color_schemes.g.dart';
 import 'package:greenleaf_app/shared/utils/constants.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   setUpWindow();
+  await ScreenUtil.ensureScreenSize();
   runApp(const GreenLeafApp());
 }
 
@@ -40,24 +42,34 @@ class _GreenLeafAppState extends State<GreenLeafApp> {
     ThemeData themeWithFont(ThemeData theme) => theme.copyWith();
 
     return MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => AppProvider())],
-        child: MaterialApp(
-          navigatorKey: Constants.globalAppKey,
-          debugShowCheckedModeBanner: false,
-          home: SplashScreen(),
-          themeMode: _themeMode,
-          theme: themeWithFont(
-            ThemeData(
+      providers: [ChangeNotifierProvider(create: (_) => AppProvider())],
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, child) {
+          return MaterialApp(
+            navigatorKey: Constants.globalAppKey,
+            debugShowCheckedModeBanner: false,
+            home: SplashScreen(),
+            themeMode: _themeMode,
+            theme: themeWithFont(
+              ThemeData(
                 useMaterial3: true,
                 fontFamily: 'NotoSans',
-                colorScheme: lightColorScheme),
-          ),
-          darkTheme: themeWithFont(
-            ThemeData(
+                colorScheme: lightColorScheme,
+              ),
+            ),
+            darkTheme: themeWithFont(
+              ThemeData(
                 useMaterial3: true,
                 fontFamily: 'NotoSans',
-                colorScheme: darkColorScheme),
-          ),
-        ));
+                colorScheme: darkColorScheme,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

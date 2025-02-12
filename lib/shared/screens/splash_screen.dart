@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:greenleaf_app/modules/authentication/screens/sign_in.dart';
+import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/shared/screens/app_logo.dart';
 import 'package:greenleaf_app/shared/screens/intro_screen.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
@@ -25,39 +26,41 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var user = sharedPreferences.getString("auth_user");
 
-    // if (user != null) {
-    //   Navigator.pushReplacement(
-    //       // ignore: use_build_context_synchronously
-    //       context,
-    //       MaterialPageRoute(
-    //           settings: const RouteSettings(name: '/'),
-    //           builder: (context) => IntroductionScreen()));
-    // } else {
-    //   Navigator.pushReplacement(
-    //       // ignore: use_build_context_synchronously
-    //       context,
-    //       MaterialPageRoute(
-    //           settings: const RouteSettings(name: '/'),
-    //           builder: (context) => IntroductionScreen()));
-    // }
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (user != null) {
+      Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+              settings: const RouteSettings(name: '/'),
+              builder: (context) => IntroductionScreen()));
+    } else {
+      Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+              settings: const RouteSettings(name: '/'),
+              builder: (context) => IntroductionScreen()));
+    }
 
     if (!mounted) return;
+  }
 
-    await Future.delayed(const Duration(seconds: 3));
+  ColorScheme colorScheme(BuildContext context) {
+    return Theme.of(context).colorScheme;
   }
 
   @override
   Widget build(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
-
-    return Material(
-      color: colorScheme.surface,
-      child: Center(
+    return Scaffold(
+      backgroundColor: colorScheme(context).surface,
+      body: Center(
         child: Container(
           height: 120,
           width: 120,
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: colorScheme(context).surface,
             borderRadius: BorderRadius.circular(30),
           ),
           padding: EdgeInsets.all(20),
