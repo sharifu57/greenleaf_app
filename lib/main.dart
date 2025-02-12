@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:greenleaf_app/modules/authentication/providers/auth_provider.dart';
 import 'package:greenleaf_app/shared/providers/app_provider.dart';
 import 'package:greenleaf_app/shared/screens/splash_screen.dart';
 import 'package:greenleaf_app/shared/utils/color_schemes.g.dart';
@@ -42,7 +43,12 @@ class _GreenLeafAppState extends State<GreenLeafApp> {
     ThemeData themeWithFont(ThemeData theme) => theme.copyWith();
 
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AppProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        )
+      ],
       child: ScreenUtilInit(
         designSize: const Size(375, 812),
         minTextAdapt: true,

@@ -64,8 +64,7 @@ class _InputFormState extends State<InputForm> {
         hintText: widget.hintText,
         hintStyle: widget.hintStyle,
         prefixIcon: Padding(
-          padding:
-              const EdgeInsets.only(right: 8.0), // Adjust padding for spacing
+          padding: const EdgeInsets.only(right: 8.0),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -73,8 +72,7 @@ class _InputFormState extends State<InputForm> {
                 widget.countryCode,
                 style: const TextStyle(fontSize: 13),
               ),
-              const SizedBox(
-                  width: 10), // Space between country code and hint text
+              const SizedBox(width: 10),
             ],
           ),
         ),

@@ -9,6 +9,10 @@ class HeaderText extends StatefulWidget {
 }
 
 class _HeaderTextState extends State<HeaderText> {
+  ColorScheme colorScheme(BuildContext context) {
+    return Theme.of(context).colorScheme;
+  }
+
   @override
   Widget build(BuildContext context) {
     return RichText(
@@ -18,7 +22,10 @@ class _HeaderTextState extends State<HeaderText> {
           TextSpan(
             text: widget.title,
             style: TextStyle(
-                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: colorScheme(context).onSurface,
+            ),
           ),
         ],
       ),

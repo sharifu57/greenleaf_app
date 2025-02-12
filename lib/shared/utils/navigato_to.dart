@@ -1,6 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:greenleaf_app/shared/screens/intro_screen.dart';
 
 void navigateAndReplace(BuildContext context, Widget widgetScreen) {
   // switch (routeName) {

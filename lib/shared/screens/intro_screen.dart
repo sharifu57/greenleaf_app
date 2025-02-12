@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:greenleaf_app/shared/utils/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({super.key});

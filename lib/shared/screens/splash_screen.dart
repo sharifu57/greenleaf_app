@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:greenleaf_app/modules/authentication/screens/sign_in.dart';
 import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/shared/screens/app_logo.dart';
 import 'package:greenleaf_app/shared/screens/intro_screen.dart';
