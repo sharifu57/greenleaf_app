@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_verification_code_field/flutter_verification_code_field.dart';
 import 'package:greenleaf_app/modules/authentication/providers/auth_provider.dart';
 import 'package:greenleaf_app/shared/components/buttons/base_button.dart';
+import 'package:greenleaf_app/shared/components/dialogs/show_dialog.dart';
 import 'package:greenleaf_app/shared/components/headers/header_text.dart';
 import 'package:greenleaf_app/shared/utils/constants.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
@@ -18,6 +19,7 @@ class Verification extends StatefulWidget {
 class _VerificationState extends State<Verification>
     with TickerProviderStateMixin {
   final TextEditingController _otpController = TextEditingController();
+  String? _errorMessage;
   final _formKey = GlobalKey<FormState>();
   String? phoneNumber;
 
@@ -35,6 +37,10 @@ class _VerificationState extends State<Verification>
     setState(() {
       this.phoneNumber = phoneNumber!;
     });
+  }
+
+  ColorScheme colorScheme(BuildContext context) {
+    return Theme.of(context).colorScheme;
   }
 
   @override
@@ -80,8 +86,10 @@ class _VerificationState extends State<Verification>
                           VerificationCodeField(
                             length: 6,
                             onFilled: (value) => {
+                              print("=======value $value"),
                               setState(() {
                                 _otpController.text = value;
+                                _validateOTP();
                               })
                             },
                             size: Size(30, 60),
@@ -95,7 +103,43 @@ class _VerificationState extends State<Verification>
                               alignment: Alignment.centerRight,
                               child: GestureDetector(
                                 onTap: () {
-                                  print("=======tap resend code");
+                                  showCustomDialog(
+                                      context: context,
+                                      title: "Resend Code",
+                                      content:
+                                          "Are you sure you want to send new verification code to $phoneNumber ?.",
+                                      onConfirm: () {
+                                        authProvider
+                                            .resendVerificationCode(
+                                                phoneNumber!)
+                                            .then((success) {
+                                          if (!success) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(authProvider
+                                                      .errorMessage),
+                                                  backgroundColor:
+                                                      colorScheme(context)
+                                                          .error),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(authProvider
+                                                    .successMessage),
+                                                backgroundColor:
+                                                    colorScheme(context)
+                                                        .primary,
+                                              ),
+                                            );
+                                          }
+                                        });
+                                      },
+                                      onCancel: () {
+                                        Navigator.of(context).pop();
+                                      });
                                 },
                                 child: Text("Resend Code via SMS"),
                               )),
@@ -130,16 +174,36 @@ class _VerificationState extends State<Verification>
     );
   }
 
-  _handleVerificationFormSubmit(
-      BuildContext context, AuthProvider authProvider, otpNumber) {
-    authProvider.validateOtp(phoneNumber!, otpNumber).then((success) => {
-          if (success)
-            {
-              print("========otp verified successfully")
-              // Navigator.pop(context);
-            }
-          else
-            {print("========otp verification failed")}
-        });
+  void _validateOTP() {
+    print("=======validateOTP =====");
+    if (_otpController.text.length < 6 ||
+        !_otpController.text.contains(RegExp(r'^\d+$'))) {
+      setState(() {
+        _errorMessage = "Invalid OTP. Enter a 6-digit number.";
+      });
+    } else {
+      setState(() {
+        _errorMessage = null;
+      });
+
+      // Proceed with verification
+      print("Valid OTP: ${_otpController.text}");
+    }
+  }
+
+  void _handleVerificationFormSubmit(
+      BuildContext context, AuthProvider authProvider, String otpNumber) {
+    authProvider.validateOtp(phoneNumber!, otpNumber).then((success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success
+              ? authProvider.successMessage
+              : authProvider.errorMessage),
+          backgroundColor: success
+              ? colorScheme(context).primary
+              : colorScheme(context).error,
+        ),
+      );
+    });
   }
 }

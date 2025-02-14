@@ -93,8 +93,6 @@ class AuthProvider with ChangeNotifier {
       "otp": otp,
     };
 
-    print("=========verify $payload");
-
     try {
       await Future.delayed(const Duration(seconds: 2));
       Response response = await dio.post(
@@ -107,9 +105,12 @@ class AuthProvider with ChangeNotifier {
         ),
       );
 
-      print(
-        "=======response ${response.statusCode}",
-      );
+      if (response.statusCode == 200) {
+        _successMessage = "OTP verified successfully.";
+        // navigateAndReplace(context, Verification());
+        stopLoading();
+        return true;
+      }
 
       stopLoading();
       return true;
@@ -118,6 +119,8 @@ class AuthProvider with ChangeNotifier {
       if (e.response != null) {
         _errorMessage =
             "Failed to verify OTP. Server returned ${e.response?.statusCode}";
+      } else if (e.response!.statusCode == 404) {
+        _errorMessage = "Failed to verify OTP. Please try again later.";
       } else {
         _errorMessage =
             "Failed to verify OTP. Please check your network connection.";
@@ -126,5 +129,47 @@ class AuthProvider with ChangeNotifier {
       stopLoading();
       return false;
     }
+  }
+
+  
+
+  Future<bool> resendVerificationCode(String phoneNumber) async {
+    startLoading();
+
+    try {
+      const url = "${DataConnection.baseUrl}auth/regenerateOTP";
+
+      final payload = {"phoneNumber": phoneNumber};
+
+      Response response = await dio.post(
+        url,
+        data: jsonEncode(payload),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      print("=======regenerate response $response");
+
+      if (response.statusCode == 200) {
+        _successMessage =
+            "New OTP has been sent to this phone number $phoneNumber.";
+        stopLoading();
+        return true;
+      }
+
+      stopLoading();
+      return true;
+    } on DioException catch (e) {
+      startLoading();
+      if (e.response != null) {
+        _errorMessage = "Failed to regenerate OTP. Please try again later.";
+      }
+    }
+
+    stopLoading();
+    return false;
   }
 }

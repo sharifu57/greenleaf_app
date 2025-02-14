@@ -44,6 +44,7 @@ dependencies:
   connectivity_plus: ^5.0.2
   dio: ^5.8.0+1
   flutter_verification_code_field: ^1.1.5
+  heading_text_flutter: ^0.0.1
 
 
 dev_dependencies:
