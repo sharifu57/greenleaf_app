@@ -37,7 +37,6 @@ class StorageService {
       return null;
     }
 
-    // Try getting data in different types
     if (prefs.getString(key) != null) {
       return prefs.getString(key);
     } else if (prefs.getInt(key) != null) {

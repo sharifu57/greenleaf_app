@@ -105,8 +105,8 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                       },
                       onSaved: (value) {},
                       keyBoardInputType: TextInputType.phone,
-                      countryCode: "+255", // Example: Tanzania country code
-                      focusNode: _phoneFocusNode, // Add focusNode here
+                      countryCode: "+255",
+                      focusNode: _phoneFocusNode,
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 20.h),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -34,14 +35,19 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signUp(BuildContext context, String phoneNumber, String fullName) async {
+  Future<bool> signUp(
+      BuildContext context, String phoneNumber, String fullName) async {
     startLoading();
     const url = "${DataConnection.baseUrl}auth/signUp";
 
+    final String phoneNumberCode = "255$phoneNumber";
+
     final data = {
-      "phoneNumber": phoneNumber,
+      "phoneNumber": phoneNumberCode,
       "fullName": fullName,
     };
+
+    print("=========submit data: $data");
 
     try {
       await Future.delayed(const Duration(seconds: 2));
@@ -61,7 +67,7 @@ class AuthProvider with ChangeNotifier {
         final phoneNumber = response.data['phoneNumber'];
         StorageService.storeData("fullName", fullName);
         StorageService.storeData("phoneNumber", phoneNumber);
-        navigateAndReplace(context, Verificatio());
+        navigateAndReplace(context, Verification());
         stopLoading();
       }
 
@@ -75,6 +81,49 @@ class AuthProvider with ChangeNotifier {
         _errorMessage =
             "Failed to sign in. Please check your network connection.";
       }
+      return false;
+    }
+  }
+
+  Future<bool> validateOtp(String phoneNumber, String otp) async {
+    startLoading();
+    const url = "${DataConnection.baseUrl}auth/validateOTP";
+    final payload = {
+      "phoneNumber": phoneNumber,
+      "otp": otp,
+    };
+
+    print("=========verify $payload");
+
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      Response response = await dio.post(
+        url,
+        data: jsonEncode(payload),
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      print(
+        "=======response ${response.statusCode}",
+      );
+
+      stopLoading();
+      return true;
+    } on DioException catch (e) {
+      stopLoading();
+      if (e.response != null) {
+        _errorMessage =
+            "Failed to verify OTP. Server returned ${e.response?.statusCode}";
+      } else {
+        _errorMessage =
+            "Failed to verify OTP. Please check your network connection.";
+      }
+
+      stopLoading();
       return false;
     }
   }
