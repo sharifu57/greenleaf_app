@@ -30,7 +30,6 @@ class StorageService {
   }
 
   static Future<dynamic> retrieveData(String key) async {
-    print("======= Retrieving data for key: $key");
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (!prefs.containsKey(key)) {

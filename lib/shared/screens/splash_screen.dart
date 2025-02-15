@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/modules/authentication/screens/verification.dart';
+import 'package:greenleaf_app/modules/home/screens/home_page.dart';
 import 'package:greenleaf_app/shared/screens/app_logo.dart';
 import 'package:greenleaf_app/shared/screens/intro_screen.dart';
 import 'package:greenleaf_app/shared/utils/navigato_to.dart';
@@ -23,16 +24,15 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void init() async {
-    await setupPreferences(context);
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var user = sharedPreferences.getString("auth_user");
+    bool? isAuthenticated =
+        await StorageService.retrieveData("isAuthenticated");
 
     await Future.delayed(const Duration(seconds: 3));
 
-    if (user != null) {
-      navigateAndReplace(context, IntroductionScreen());
+    if (isAuthenticated != true) {
+      navigateAndReplace(context, HomePage());
     } else {
-      navigateAndReplace(context, SignUp());
+      navigateAndReplace(context, IntroductionScreen());
     }
 
     if (!mounted) return;

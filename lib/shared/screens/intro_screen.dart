@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/shared/utils/colors.dart';
+import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class IntroductionScreen extends StatefulWidget {
@@ -101,7 +103,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                     SizedBox(
                         child: TextButton(
                       style: flatButtonStyle,
-                      onPressed: () {},
+                      onPressed: () {
+                        navigateAndReplace(context, SignUp());
+                      },
                       child: Text(
                         'Skip',
                         style: TextStyle(

@@ -108,6 +108,8 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _successMessage = "OTP verified successfully.";
+        final isAuthenticated = response.data?['data']?['authenticated'];
+        StorageService.storeData("isAuthenticated", isAuthenticated);
         navigateAndReplace(context, HomePage());
         stopLoading();
         return true;
@@ -118,8 +120,8 @@ class AuthProvider with ChangeNotifier {
     } on DioException catch (e) {
       stopLoading();
       if (e.response != null) {
-        _errorMessage =
-            "Failed to verify OTP. Server returned ${e.response?.statusCode}";
+        print("=======error ${e.response}");
+        _errorMessage = "Failed to verify OTP. ${e.response?.data['message']}";
       } else if (e.response!.statusCode == 404) {
         _errorMessage = "Failed to verify OTP. Please try again later.";
       } else {
