@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:greenleaf_app/modules/authentication/screens/verification.dart';
+import 'package:greenleaf_app/modules/home/screens/home_page.dart';
 import 'package:greenleaf_app/shared/utils/data_connection.dart';
 import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
@@ -63,8 +64,8 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _successMessage = "Successfully Created Account.";
-        final fullName = response.data['fullName'];
-        final phoneNumber = response.data['phoneNumber'];
+        final fullName = response.data?['data']?['fullName'];
+        final phoneNumber = response.data?['data']?['phoneNumber'];
         StorageService.storeData("fullName", fullName);
         StorageService.storeData("phoneNumber", phoneNumber);
         navigateAndReplace(context, Verification());
@@ -75,8 +76,7 @@ class AuthProvider with ChangeNotifier {
     } on DioException catch (e) {
       stopLoading();
       if (e.response != null) {
-        _errorMessage =
-            "Failed to sign in. Server returned ${e.response?.statusCode}";
+        _errorMessage = "Failed to sign up. ${e.response?.data['message']}";
       } else {
         _errorMessage =
             "Failed to sign in. Please check your network connection.";
@@ -85,7 +85,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> validateOtp(String phoneNumber, String otp) async {
+  Future<bool> validateOtp(
+      BuildContext context, String phoneNumber, String otp) async {
     startLoading();
     const url = "${DataConnection.baseUrl}auth/validateOTP";
     final payload = {
@@ -107,7 +108,7 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _successMessage = "OTP verified successfully.";
-        // navigateAndReplace(context, Verification());
+        navigateAndReplace(context, HomePage());
         stopLoading();
         return true;
       }
@@ -130,8 +131,6 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-
-  
 
   Future<bool> resendVerificationCode(String phoneNumber) async {
     startLoading();

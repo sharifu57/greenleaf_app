@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_verification_code_field/flutter_verification_code_field.dart';
 import 'package:greenleaf_app/modules/authentication/providers/auth_provider.dart';
+import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/shared/components/buttons/base_button.dart';
 import 'package:greenleaf_app/shared/components/dialogs/show_dialog.dart';
 import 'package:greenleaf_app/shared/components/headers/header_text.dart';
 import 'package:greenleaf_app/shared/utils/constants.dart';
+import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +22,7 @@ class _VerificationState extends State<Verification>
     with TickerProviderStateMixin {
   final TextEditingController _otpController = TextEditingController();
   String? _errorMessage;
+  bool? _isCorrect;
   final _formKey = GlobalKey<FormState>();
   String? phoneNumber;
 
@@ -56,7 +59,33 @@ class _VerificationState extends State<Verification>
           child: Column(
             children: [
               SizedBox(
-                height: 70.h,
+                height: 20.h,
+              ),
+              SizedBox(
+                height: 80.h,
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      navigateAndReplace(context, SignUp());
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_back_ios_new,
+                          size: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Back",
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,6 +125,15 @@ class _VerificationState extends State<Verification>
                             spaceBetween: 30,
                             matchingPattern: RegExp(r'^\d+$'),
                           ),
+                          if (_errorMessage != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                _errorMessage!,
+                                style:
+                                    TextStyle(color: Colors.red, fontSize: 14),
+                              ),
+                            ),
                           SizedBox(
                             height: 20,
                           ),
@@ -153,13 +191,17 @@ class _VerificationState extends State<Verification>
                               isDisabled: authProvider.isLoading,
                               name: "Verify Code",
                               onPressed: () {
-                                _formKey.currentState?.validate() ?? false
-                                    ? _handleVerificationFormSubmit(
-                                        context,
-                                        authProvider,
-                                        _otpController.text,
-                                      )
-                                    : null;
+                                _validateOTP();
+                                if (_errorMessage == null &&
+                                    _isCorrect == true) {
+                                  _formKey.currentState?.validate() ?? false
+                                      ? _handleVerificationFormSubmit(
+                                          context,
+                                          authProvider,
+                                          _otpController.text,
+                                        )
+                                      : null;
+                                }
                               },
                             ),
                           )
@@ -176,24 +218,30 @@ class _VerificationState extends State<Verification>
 
   void _validateOTP() {
     print("=======validateOTP =====");
-    if (_otpController.text.length < 6 ||
-        !_otpController.text.contains(RegExp(r'^\d+$'))) {
+    String otp = _otpController.text.trim();
+
+    if (otp.isEmpty) {
+      setState(() {
+        _errorMessage = "OTP cannot be empty.";
+        _isCorrect = false;
+      });
+    } else if (otp.length != 6 || !RegExp(r'^\d{6}$').hasMatch(otp)) {
       setState(() {
         _errorMessage = "Invalid OTP. Enter a 6-digit number.";
+        _isCorrect = false;
       });
     } else {
       setState(() {
         _errorMessage = null;
+        _isCorrect = true;
       });
-
-      // Proceed with verification
-      print("Valid OTP: ${_otpController.text}");
+      print("Valid OTP: $otp");
     }
   }
 
   void _handleVerificationFormSubmit(
       BuildContext context, AuthProvider authProvider, String otpNumber) {
-    authProvider.validateOtp(phoneNumber!, otpNumber).then((success) {
+    authProvider.validateOtp(context, phoneNumber!, otpNumber).then((success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success
