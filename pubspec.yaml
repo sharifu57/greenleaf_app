@@ -49,6 +49,7 @@ dependencies:
   toastification: ^2.3.0
   fluttertoast: ^8.2.12
   standard_searchbar: ^2.1.1
+  geocoding: ^3.0.0
 
 
 dev_dependencies:

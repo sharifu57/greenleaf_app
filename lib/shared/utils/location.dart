@@ -1,9 +1,26 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:greenleaf_app/shared/utils/constants.dart';
 import 'package:location/location.dart' as loc;
 import 'package:toastification/toastification.dart';
 
+class WeatherData {
+  final double temperature;
+  final String iconUrl;
+  final String description;
+
+  WeatherData(
+      {required this.temperature,
+      required this.iconUrl,
+      required this.description});
+}
+
 class LocationService {
+  final String apiKey = Constants.weatherKey;
   final loc.Location location = loc.Location();
 
   /// Request location permission
@@ -78,5 +95,73 @@ class LocationService {
         );
       },
     );
+  }
+
+  Future<void> _requestLocation() async {
+    try {
+      geo.Position position = await geo.Geolocator.getCurrentPosition(
+          desiredAccuracy: geo.LocationAccuracy.high);
+
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String locationName = place.name ?? "Unknown";
+        String adminArea = place.administrativeArea ?? "Unknown";
+        String country = place.country ?? "Unknown";
+
+        print("📍 Location: $locationName, $adminArea, $country");
+
+        // Get Temperature
+        // double temperature =
+        //     await getTemperature(position.latitude, position.longitude);
+        // print("🌡️ Temperature: ${temperature.toStringAsFixed(1)}°C");
+      }
+    } catch (e) {
+      print("Location Error: $e");
+    }
+  }
+
+  // Future<WeatherData> getTemperature(double lat, double lon) async {
+  //   String url =
+  //       "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=$apiKey";
+
+  //   Dio dio = new Dio();
+  //   final response = await dio.get(url);
+
+  //   print("response: $response");
+
+  //   if (response.statusCode == 200) {
+  //     Map<String, dynamic> data = response.data;
+  //     double temperature = data["main"]["temp"];
+  //     return temperature;
+  //   } else {
+  //     throw Exception("Failed to fetch weather data");
+  //   }
+  // }
+
+  Future<WeatherData> getWeatherData(double lat, double lon) async {
+    String url =
+        "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=$apiKey";
+
+    Dio dio = Dio();
+    final response = await dio.get(url);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = response.data;
+      double temperature = data["main"]["temp"];
+
+      String iconCode =
+          data["weather"][0]["icon"]; // Extract the weather icon code
+      String iconUrl =
+          "https://openweathermap.org/img/wn/$iconCode@2x.png"; // OpenWeatherMap image URL
+      String description = data["weather"][0]["description"];
+
+      return WeatherData(
+          temperature: temperature, iconUrl: iconUrl, description: description);
+    } else {
+      throw Exception("Failed to fetch weather data");
+    }
   }
 }

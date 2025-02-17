@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:greenleaf_app/modules/authentication/screens/sign_up.dart';
 import 'package:greenleaf_app/modules/authentication/screens/verification.dart';
 import 'package:greenleaf_app/modules/home/screens/home_page.dart';
@@ -17,11 +18,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final LocationService _locationService = LocationService();
   @override
   void initState() {
     init();
-    _requestLocation();
     super.initState();
   }
 
@@ -38,15 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (!mounted) return;
-  }
-
-  Future<void> _requestLocation() async {
-    try {
-      final position = await _locationService.checkLocationPermission(context);
-      print("User Location: ${position.latitude}, ${position.longitude}");
-    } catch (e) {
-      print("Location Error: $e");
-    }
   }
 
   ColorScheme colorScheme(BuildContext context) {
