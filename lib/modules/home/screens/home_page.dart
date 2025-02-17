@@ -30,10 +30,10 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
             border: Border(
-          top: BorderSide(
-            width: 0.05,
-          ),
-        )),
+              top: BorderSide(
+                width: 0.05,
+              ),
+            )),
         child: NavigationBar(
             elevation: 20,
             height: 55,
@@ -46,35 +46,35 @@ class _HomePageState extends State<HomePage> {
             destinations: <Widget>[
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.notifications,
+                  Icons.home,
                   size: 18,
                 ),
-                icon: Icon(Icons.notifications_none_outlined),
-                label: 'Notifications',
+                icon: Icon(Icons.home_outlined),
+                label: 'Home',
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.notifications,
+                  Icons.feed,
                   size: 18,
                 ),
-                icon: Icon(Icons.notifications_none_outlined),
-                label: 'Notifications',
+                icon: Icon(Icons.feed_outlined),
+                label: 'Feed',
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.notifications,
+                  Icons.agriculture,
                   size: 18,
                 ),
-                icon: Icon(Icons.notifications_none_outlined),
-                label: 'Notifications',
+                icon: Icon(Icons.agriculture_outlined),
+                label: 'Crop Care',
               ),
               NavigationDestination(
                 selectedIcon: Icon(
-                  Icons.notifications,
+                  Icons.person,
                   size: 18,
                 ),
-                icon: Icon(Icons.notifications_none_outlined),
-                label: 'Notifications',
+                icon: Icon(Icons.person_2_outlined),
+                label: 'account',
               ),
             ]),
       ),

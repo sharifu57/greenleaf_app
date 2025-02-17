@@ -10,6 +10,8 @@ class CropCare extends StatefulWidget {
 class _CropCareState extends State<CropCare> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Center(
+      child: Text("Crop care"),
+    );
   }
 }

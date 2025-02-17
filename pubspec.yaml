@@ -45,6 +45,10 @@ dependencies:
   dio: ^5.8.0+1
   flutter_verification_code_field: ^1.1.5
   heading_text_flutter: ^0.0.1
+  location: ^8.0.0
+  toastification: ^2.3.0
+  fluttertoast: ^8.2.12
+  standard_searchbar: ^2.1.1
 
 
 dev_dependencies:

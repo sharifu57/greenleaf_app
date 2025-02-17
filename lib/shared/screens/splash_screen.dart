@@ -4,6 +4,7 @@ import 'package:greenleaf_app/modules/authentication/screens/verification.dart';
 import 'package:greenleaf_app/modules/home/screens/home_page.dart';
 import 'package:greenleaf_app/shared/screens/app_logo.dart';
 import 'package:greenleaf_app/shared/screens/intro_screen.dart';
+import 'package:greenleaf_app/shared/utils/location.dart';
 import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,10 +17,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final LocationService _locationService = LocationService();
   @override
   void initState() {
-    // TODO: implement initState
     init();
+    _requestLocation();
     super.initState();
   }
 
@@ -36,6 +38,15 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (!mounted) return;
+  }
+
+  Future<void> _requestLocation() async {
+    try {
+      final position = await _locationService.checkLocationPermission(context);
+      print("User Location: ${position.latitude}, ${position.longitude}");
+    } catch (e) {
+      print("Location Error: $e");
+    }
   }
 
   ColorScheme colorScheme(BuildContext context) {

@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:greenleaf_app/modules/authentication/screens/verification.dart';
 import 'package:greenleaf_app/modules/home/screens/home_page.dart';
-import 'package:greenleaf_app/shared/utils/data_connection.dart';
+import 'package:greenleaf_app/config/data_connection.dart';
 import 'package:greenleaf_app/shared/utils/navigato_to.dart';
 import 'package:greenleaf_app/shared/utils/preference.dart';
 

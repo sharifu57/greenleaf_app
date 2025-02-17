@@ -8,6 +8,7 @@ import 'package:greenleaf_app/shared/providers/app_provider.dart';
 import 'package:greenleaf_app/shared/screens/splash_screen.dart';
 import 'package:greenleaf_app/shared/utils/color_schemes.g.dart';
 import 'package:greenleaf_app/shared/utils/constants.dart';
+import 'package:greenleaf_app/shared/utils/location.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
