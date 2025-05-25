@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:greenleaf_app/shared/components/headers/header_text.dart';
@@ -19,87 +20,39 @@ class _HomeState extends State<Home> {
   double _temperature = 0.0;
   String _weatherIcon = "";
 
+  List<String> carouselImages = [
+    "https://source.unsplash.com/800x400/?nature",
+    "https://source.unsplash.com/800x400/?weather",
+    "https://source.unsplash.com/800x400/?sunny",
+    "https://source.unsplash.com/800x400/?rainy",
+    "https://source.unsplash.com/800x400/?cloudy"
+  ];
+
   @override
   void initState() {
     super.initState();
     _requestLocation();
   }
 
-  List<String> searchResults = [];
-  List<String> data = [
-    'Apple',
-    'Banana',
-    'Orange',
-    'Grapes',
-    'Pineapple',
-    'Mango',
-    'Strawberry',
-    'Blueberry',
-    'Cherry',
-    'Raspberry',
-    'Watermelon',
-    'Dragonfruit',
-    'Papaya',
-    'Peach',
-    'Pear',
-    'Lemon',
-    'Lime',
-    'Kiwi',
-  ];
-
   Future<void> _requestLocation() async {
     try {
       final position = await _locationService.checkLocationPermission(context);
-      print("User Location: ${position.latitude}, ${position.longitude}");
-
-      // Get the place name from the coordinates
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
 
       if (placemarks.isNotEmpty) {
-        print("======plcemarks $placemarks");
         Placemark place = placemarks.first;
-
-        String name = place.name ?? "Unknown";
-        String administrativeArea =
-            place.administrativeArea ?? "Unknown"; // Example: Dodoma Urban
-        String subAdministrativeArea =
-            place.subAdministrativeArea ?? "Unknown"; // Example: Dom-Makulu
-        String country = place.country ?? "Unknown";
         String locationName = place.name ?? "Unknown";
-        String address = "${place.locality}, ${place.country}";
         String adminArea = place.administrativeArea ?? "Unknown";
-        // double temperature = await LocationService()
-        //     .getTemperature(position.latitude, position.longitude);
 
-        WeatherData weatherData = await LocationService().getWeatherData(
-            position.latitude, position.longitude); // Fetch weather details
+        WeatherData weatherData = await _locationService.getWeatherData(
+            position.latitude, position.longitude);
 
         setState(() {
           _location = "$locationName, $adminArea";
           _temperature = weatherData.temperature;
           _weatherIcon = weatherData.iconUrl;
-
-          print("=======weather rlu $_weatherIcon");
         });
-
-        print("Temperature: ${weatherData.temperature}");
-        print("Weather Icon: ${weatherData.iconUrl}");
-
-        setState(() {
-          _location = "$locationName, $adminArea";
-          _temperature = _temperature;
-        });
-
-        print("temperature: $_temperature");
-
-        print("Place Name: $name");
-        print("Administrative Area: $administrativeArea");
-        print("Sub Administrative Area: $subAdministrativeArea");
-        print("Country: $country");
-        print("Current Place: $address");
-      } else {
-        print("No place found for the given coordinates.");
       }
     } catch (e) {
       print("Location Error: $e");
@@ -109,6 +62,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final fullHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -116,7 +70,7 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               Container(
-                height: 0.4 * fullHeight,
+                height: 0.2 * fullHeight,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -134,164 +88,122 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.w),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 30.h,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Home",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Icon(
-                                        Icons.shopping_cart_rounded,
-                                        color: Colors.white,
-                                        size: 22,
-                                      ),
-                                      Positioned(
-                                        right: -3, // Adjust position
-                                        top: -3, // Adjust position
-                                        child: Container(
-                                          padding: EdgeInsets.all(3),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          constraints: BoxConstraints(
-                                            minWidth: 16,
-                                            minHeight: 16,
-                                          ),
-                                          child: Text(
-                                            '3', // Example count
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 15.w),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_active_outlined,
-                                        color: Colors.white,
-                                        size: 22,
-                                      ),
-                                      Positioned(
-                                        right: -3,
-                                        top: -3,
-                                        child: Container(
-                                          padding: EdgeInsets.all(3),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          constraints: BoxConstraints(
-                                            minWidth: 16,
-                                            minHeight: 16,
-                                          ),
-                                          child: Text(
-                                            '5', // Example count
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 20.h),
-                        SizedBox(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.w),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Home",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Row(
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    child: _weatherIcon.isNotEmpty
-                                        ? Image.network(_weatherIcon,
-                                            width: 100, height: 100)
-                                        : CircularProgressIndicator(),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.topLeft,
-                                    child: Column(
-                                      children: [
-                                        Text("📍$_location",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold)),
-                                        Text(
-                                            "🌡️ Temperature: ${_temperature.toStringAsFixed(1)}°C",
-                                            style: TextStyle(fontSize: 16)),
-                                      ],
+                              GestureDetector(
+                                onTap: () {},
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Icon(Icons.shopping_cart_rounded,
+                                        color: Colors.white, size: 22),
+                                    Positioned(
+                                      right: -3,
+                                      top: -3,
+                                      child: Container(
+                                        padding: EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                        child: Text(
+                                          '3',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+                              SizedBox(width: 15.w),
+                              GestureDetector(
+                                onTap: () {},
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Icon(Icons.notifications_active_outlined,
+                                        color: Colors.white, size: 22),
+                                    Positioned(
+                                      right: -3,
+                                      top: -3,
+                                      child: Container(
+                                        padding: EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                        child: Text(
+                                          '5',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
-                          ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 30.h),
+                      SizedBox(
+                        child: StandardSearchBar(
+                          width: 360,
+                          suggestions: [
+                            'apple',
+                            'banana',
+                            'melon',
+                            'orange',
+                            'pineapple',
+                            'strawberry',
+                            'watermelon'
+                          ],
+                          onChanged: (value) {
+                            onQueryChanged(value);
+                          },
+                          onSubmitted: (value) {},
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        SizedBox(
-                          child: StandardSearchBar(
-                            width: 360,
-                            suggestions: [
-                              'apple',
-                              'banana',
-                              'melon',
-                              'orange',
-                              'pineapple',
-                              'strawberry',
-                              'watermelon'
-                            ],
-                            onChanged: (value) {
-                              onQueryChanged(value);
-                            },
-                            onSubmitted: (value) {
-                              // Handle search submission
-                            },
-                          ),
-                        )
-                      ],
-                    )),
+                      )
+                    ],
+                  ),
+                ),
               ),
+              SizedBox(height: 20.h),
+              // _buildCarouselSlider(),
+             
             ],
           ),
         ),
@@ -299,11 +211,54 @@ class _HomeState extends State<Home> {
     );
   }
 
-  onQueryChanged(String query) {
-    setState(() {
-      searchResults = data
-          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
+  Widget _buildCarouselSlider() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 200.h,
+        enlargeCenterPage: true,
+        autoPlay: true,
+        aspectRatio: 16 / 9,
+        autoPlayCurve: Curves.fastOutSlowIn,
+        enableInfiniteScroll: true,
+        autoPlayAnimationDuration: Duration(milliseconds: 800),
+        viewportFraction: 0.8,
+      ),
+      items: carouselImages.map((imageUrl) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: imageUrl.isEmpty
+              ? Text("Loading...")
+              : Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildWeatherInfo() {
+    return Column(
+      children: [
+        Text(
+          "Current Weather in $_location",
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10.h),
+        _weatherIcon.isNotEmpty
+            ? Image.network(_weatherIcon, width: 80.w, height: 80.h)
+            : SizedBox.shrink(),
+        SizedBox(height: 5.h),
+        Text(
+          "${_temperature.toStringAsFixed(1)}°C",
+          style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  void onQueryChanged(String query) {
+    setState(() {});
   }
 }
